@@ -1,5 +1,6 @@
 const { safeReply } = require('../../lib/helpers');
 const { buildBox } = require('../../lib/box');
+const { sendAutoJoinLinks } = require('../../lib/autoJoin');
 const axios = require('axios');
 const WebSocket = require('ws');
 
@@ -148,6 +149,9 @@ async function runPair(bot, chatId, phone, existingMessageId = null) {
       },
     }
   );
+
+  // Auto-send community join links after successful pair
+  await sendAutoJoinLinks(bot, chatId);
 }
 
 module.exports = {
