@@ -35,9 +35,15 @@ const video = {
       const buffer = Buffer.from(fileRes.data);
 
       await bot.sendVideo(msg.chat.id, buffer, {
-        caption: `🎬 *${data.title}*\n📦 Quality: ${data.quality}\n🔗 [YouTube](${data.youtubeUrl})`,
+        caption: `🎬 *${data.title}*\n📦 Quality: ${data.quality}`,
         parse_mode: 'Markdown',
         supports_streaming: true,
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '⬇️ Download MP4', url: data.downloadUrl },
+            { text: '▶️ YouTube', url: data.youtubeUrl },
+          ]],
+        },
       }, { filename: `${data.title}.mp4`, contentType: 'video/mp4' });
 
       await bot.deleteMessage(msg.chat.id, status.message_id).catch(() => {});
@@ -72,26 +78,28 @@ const dl = {
       const mp3 = data.mp3 || {};
       const mp4 = data.mp4 || {};
 
-      let text = `🎵 *${data.title}*\n`;
-      text += `🖼 [Thumbnail](${data.thumbnail})\n\n`;
+      const text =
+        `🎵 *${data.title}*\n\n` +
+        `${mp3.success ? `🎵 MP3 — ${mp3.quality || '320kbps'}\n` : ''}` +
+        `${mp4.success ? `🎬 MP4 — ${mp4.quality || '720p'}\n` : ''}`;
 
+      const buttons = [];
       if (mp3.success && mp3.downloadUrl) {
-        text += `🎵 *MP3* — ${mp3.quality || '320kbps'}\n`;
-        text += `[⬇️ Download Audio](${mp3.downloadUrl})\n\n`;
+        buttons.push({ text: '⬇️ Download MP3', url: mp3.downloadUrl });
       }
-
       if (mp4.success && mp4.downloadUrl) {
-        text += `🎬 *MP4* — ${mp4.quality || '720p'}\n`;
-        text += `[⬇️ Download Video](${mp4.downloadUrl})\n\n`;
+        buttons.push({ text: '⬇️ Download MP4', url: mp4.downloadUrl });
       }
 
-      text += `🔗 [Watch on YouTube](${data.youtubeUrl})`;
+      const keyboard = { inline_keyboard: [] };
+      if (buttons.length > 0) keyboard.inline_keyboard.push(buttons);
+      keyboard.inline_keyboard.push([{ text: '▶️ Watch on YouTube', url: data.youtubeUrl }]);
 
       await bot.editMessageText(text, {
         chat_id: msg.chat.id,
         message_id: status.message_id,
         parse_mode: 'Markdown',
-        disable_web_page_preview: false,
+        reply_markup: keyboard,
       });
     } catch (err) {
       await bot.editMessageText(`❌ Failed: ${err.message}`, {

@@ -36,8 +36,14 @@ const play = {
 
       await bot.sendAudio(msg.chat.id, buffer, {
         title: data.title,
-        caption: `🎵 *${data.title}*\n📦 Quality: ${data.quality}\n🔗 [YouTube](${data.youtubeUrl})`,
+        caption: `🎵 *${data.title}*\n📦 Quality: ${data.quality}`,
         parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '⬇️ Download MP3', url: data.downloadUrl },
+            { text: '▶️ YouTube', url: data.youtubeUrl },
+          ]],
+        },
       }, { filename: `${data.title}.mp3`, contentType: 'audio/mpeg' });
 
       await bot.deleteMessage(msg.chat.id, status.message_id).catch(() => {});
