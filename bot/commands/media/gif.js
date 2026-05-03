@@ -13,10 +13,11 @@ module.exports = {
     }
 
     try {
+      const tenorKey = process.env.TENOR_API_KEY || 'AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ';
       const res = await axios.get('https://api.tenor.com/v2/search', {
         params: {
           q: query,
-          key: 'AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ',
+          key: tenorKey,
           limit: 1,
           media_filter: 'gif',
         },

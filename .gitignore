@@ -44,6 +44,14 @@ Thumbs.db
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
+# Environment & secrets — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Bot runtime data (contains group IDs and settings)
+bot/data/
+
 # Replit
 .cache/
 .local/
