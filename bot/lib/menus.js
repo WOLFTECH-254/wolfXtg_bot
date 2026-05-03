@@ -126,7 +126,7 @@ const menus = {
         'gctime        welcome',
         'goodbye       joinapproval',
         'onlyadmins    creategroup',
-        'leave',
+        'mode          leave',
         null,
         '⚠️  Admin-only commands',
       ]) +
