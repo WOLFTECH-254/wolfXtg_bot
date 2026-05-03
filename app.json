@@ -6,7 +6,8 @@
   "logo": "",
   "env": {
     "TELEGRAM_BOT_TOKEN": {
-      "description": "Your Telegram bot token from @BotFather",
+      "description": "Your Telegram bot token from @BotFather. Paste it in the value field below.",
+      "value": "",
       "required": true
     }
   },

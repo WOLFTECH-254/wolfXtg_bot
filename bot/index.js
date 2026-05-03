@@ -1,4 +1,4 @@
-require('dotenv').config();
+const { BOT_TOKEN } = require('./lib/config');
 
 const TelegramBot = require('node-telegram-bot-api');
 const path = require('path');
@@ -9,14 +9,15 @@ const store = require('./lib/store');
 const { getSenderName, isAdmin } = require('./lib/helpers');
 const { buildBox } = require('./lib/box');
 
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-
-if (!TOKEN) {
+if (!BOT_TOKEN) {
   logger.error('TELEGRAM_BOT_TOKEN is not set.');
+  logger.error('  Pterodactyl: check your .env file in the server directory.');
+  logger.error('  Heroku:      add your token to the "value" field in app.json.');
+  logger.error('  Other:       set TELEGRAM_BOT_TOKEN as an environment variable.');
   process.exit(1);
 }
 
-const bot = new TelegramBot(TOKEN, { polling: true });
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 const commandsDir = path.join(__dirname, 'commands');
 const totalCommands = loadCommands(bot, commandsDir);
