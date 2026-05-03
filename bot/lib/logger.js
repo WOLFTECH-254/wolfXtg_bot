@@ -23,22 +23,20 @@ function rpad(s, len) {
 }
 
 function topLine() {
-  return `${GB}┌─[ ${BRAND} ]${'─'.repeat(W - BRAND.length - 4)}┐${R}`;
+  return `${GB}┌─[ ${BRAND} ]${'─'.repeat(W - BRAND.length - 4)}${R}`;
 }
 
 function midLine(label, value) {
   const inner = `  ${GB}${label}${R}  ${G}${value}${R}`;
-  const visLen = 2 + strip(label).length + 2 + strip(String(value)).length;
-  const pad = ' '.repeat(Math.max(0, W - visLen));
-  return `${GB}│${R}${inner}${pad}${GB}│${R}`;
+  return `${GB}│${R}${inner}`;
 }
 
 function sepLine() {
-  return `${GB}│${'─'.repeat(W)}│${R}`;
+  return `${GB}│${'─'.repeat(W)}${R}`;
 }
 
 function botLine() {
-  return `${GB}└${'─'.repeat(W)}┘${R}`;
+  return `${GB}└${'─'.repeat(W)}${R}`;
 }
 
 const logger = {
