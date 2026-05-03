@@ -336,7 +336,11 @@ function statusHTML() {
 }
 
 function startWebServer() {
-  const port = parseInt(process.env.WEB_PORT || process.env.PORT || '3000', 10);
+  // Replit maps localPort 8081 → externalPort 80 (preview pane).
+  // Other platforms inject PORT or let users set WEB_PORT.
+  const platform    = state.get().platform;
+  const defaultPort = platform === 'replit' ? '8081' : '3000';
+  const port        = parseInt(process.env.WEB_PORT || process.env.PORT || defaultPort, 10);
 
   const server = http.createServer((req, res) => {
     if (req.url === '/api/status') {
