@@ -45,7 +45,6 @@ Thumbs.db
 .github/instructions/nx.instructions.md
 
 # Environment & secrets — NEVER commit these
-.env
 .env.local
 .env.*.local
 
