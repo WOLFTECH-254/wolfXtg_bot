@@ -7,7 +7,7 @@ const YL = '\x1b[33m';   // yellow
 const GR = '\x1b[90m';   // gray
 
 const BRAND = 'wolfXtg_bot';
-const W = 44; // inner width (between the two │)
+const W = 34; // inner width (between the two │)
 
 function time() {
   return new Date().toTimeString().slice(0, 8);
