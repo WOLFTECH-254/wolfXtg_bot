@@ -39,16 +39,29 @@ function botLine() {
   return `${GB}└${'─'.repeat(W)}${R}`;
 }
 
+const PLATFORM_LABELS = {
+  pterodactyl: '🦕 Pterodactyl',
+  heroku:      '🟣 Heroku',
+  render:      '🟦 Render',
+  railway:     '🚂 Railway',
+  koyeb:       '🌐 Koyeb',
+  replit:      '♻️  Replit',
+  docker:      '🐳 Docker',
+  local:       '💻 Local',
+};
+
 const logger = {
-  banner: (username, cmdCount) => {
-    const tag = `@${username}`;
-    const sub = `${cmdCount} commands loaded`;
+  banner: (username, cmdCount, platform) => {
+    const tag      = `@${username}`;
+    const sub      = `${cmdCount} commands loaded`;
+    const platLabel = PLATFORM_LABELS[platform] || '💻 Local';
     console.log('');
     console.log(topLine());
     console.log(midLine('🐺', BRAND));
     console.log(midLine('✅', 'BOT IS ONLINE'));
     console.log(midLine('👤', tag));
     console.log(midLine('📦', sub));
+    console.log(midLine('🖥️', platLabel));
     console.log(botLine());
     console.log('');
   },

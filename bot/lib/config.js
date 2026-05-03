@@ -1,7 +1,27 @@
-const fs = require('fs');
+const fs   = require('fs');
 const path = require('path');
 
 const ENV_PATH = path.resolve(__dirname, '../../.env');
+
+// ── Platform detection ──────────────────────────────────────
+function detectPlatform() {
+  if (process.env.P_SERVER_UUID || process.cwd() === '/home/container')
+    return 'pterodactyl';
+  if (process.env.DYNO)
+    return 'heroku';
+  if (process.env.RENDER)
+    return 'render';
+  if (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID)
+    return 'railway';
+  if (process.env.KOYEB_APP_NAME)
+    return 'koyeb';
+  if (process.env.REPL_ID || process.env.REPLIT_DB_URL)
+    return 'replit';
+  try { if (fs.existsSync('/.dockerenv')) return 'docker'; } catch {}
+  return 'local';
+}
+
+const PLATFORM = detectPlatform();
 
 // ── Source 1: .env file (Pterodactyl, VPS, local) ──────────
 require('dotenv').config({ path: ENV_PATH });
@@ -29,4 +49,4 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
-module.exports = { BOT_TOKEN };
+module.exports = { BOT_TOKEN, PLATFORM };

@@ -1,4 +1,4 @@
-const { BOT_TOKEN } = require('./lib/config');
+const { BOT_TOKEN, PLATFORM } = require('./lib/config');
 
 const TelegramBot = require('node-telegram-bot-api');
 const path = require('path');
@@ -11,9 +11,24 @@ const { buildBox } = require('./lib/box');
 
 if (!BOT_TOKEN) {
   logger.error('TELEGRAM_BOT_TOKEN is not set.');
-  logger.error('  Pterodactyl: check your .env file in the server directory.');
-  logger.error('  Heroku:      add your token to the "value" field in app.json.');
-  logger.error('  Other:       set TELEGRAM_BOT_TOKEN as an environment variable.');
+
+  if (PLATFORM === 'pterodactyl') {
+    logger.error('Open .env in your server directory and add your token:');
+    logger.error('  TELEGRAM_BOT_TOKEN=your_token_here');
+  } else if (PLATFORM === 'heroku') {
+    logger.error('Open app.json and paste your token in the value field:');
+    logger.error('  "TELEGRAM_BOT_TOKEN": { "value": "your_token_here" }');
+  } else if (PLATFORM === 'render' || PLATFORM === 'railway' || PLATFORM === 'koyeb') {
+    logger.error(`Go to your ${PLATFORM} dashboard → Environment Variables and add:`);
+    logger.error('  TELEGRAM_BOT_TOKEN = your_token_here');
+  } else if (PLATFORM === 'docker') {
+    logger.error('Pass the token as an environment variable when running the container:');
+    logger.error('  docker run -e TELEGRAM_BOT_TOKEN=your_token_here ...');
+  } else {
+    logger.error('Add your token to the .env file in the project root:');
+    logger.error('  TELEGRAM_BOT_TOKEN=your_token_here');
+  }
+
   process.exit(1);
 }
 
@@ -176,7 +191,7 @@ bot.on('polling_error', (err) => logger.error(`Polling error: ${err.message}`));
 bot.on('error', (err) => logger.error(`Bot error: ${err.message}`));
 
 bot.getMe().then((me) => {
-  logger.banner(me.username, totalCommands);
+  logger.banner(me.username, totalCommands, PLATFORM);
 }).catch((err) => logger.error(`Failed to get bot info: ${err.message}`));
 
 process.on('SIGINT', () => { logger.warn('Shutting down...'); bot.stopPolling(); process.exit(0); });
