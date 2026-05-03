@@ -8,8 +8,9 @@
     "dev": "node --watch index.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.66.0",
     "axios": "^1.7.2",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "node-telegram-bot-api": "^0.66.0",
+    "ws": "^8.20.0"
   }
 }

@@ -61,6 +61,19 @@ bot.on('callback_query', async (query) => {
       }).catch(() => {});
     }
   }
+
+  if (data.startsWith('copycode:')) {
+    const code = data.replace('copycode:', '');
+    await bot.answerCallbackQuery(query.id, { text: `Code copied: ${code}`, show_alert: true }).catch(() => {});
+    return bot.sendMessage(chatId, `\`${code}\``, { parse_mode: 'Markdown' }).catch(() => {});
+  }
+
+  if (data.startsWith('repairme:')) {
+    const phone = data.replace('repairme:', '');
+    const { runPair } = require('./commands/pair/pair');
+    await bot.answerCallbackQuery(query.id, { text: '🔄 Requesting new code...' }).catch(() => {});
+    return runPair(bot, chatId, phone, messageId);
+  }
 });
 
 bot.on('message', async (msg) => {

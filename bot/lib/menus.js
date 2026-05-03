@@ -43,6 +43,9 @@ const menus = {
         ],
         [
           { text: '👥 Group Tools', callback_data: 'menu:group' },
+          { text: '📱 WA Pair', callback_data: 'menu:pair' },
+        ],
+        [
           { text: '📖 All Commands', callback_data: 'menu:help' },
         ],
       ],
@@ -61,6 +64,7 @@ const menus = {
         '🔹  Basic Commands',
         '⚙️  Group Settings',
         '🚫  Filters',
+        '📱  WhatsApp Pair',
       ]) +
       `\n\`\`\``,
     keyboard: {
@@ -78,6 +82,7 @@ const menus = {
           { text: '🔹 Basic', callback_data: 'menu:basic' },
         ],
         [
+          { text: '📱 WA Pair', callback_data: 'menu:pair' },
           { text: '🏠 Home', callback_data: 'menu:start' },
         ],
       ],
@@ -232,6 +237,32 @@ const menus = {
         ],
         [
           { text: '👥 Group', callback_data: 'menu:group' },
+          { text: '🏠 Home', callback_data: 'menu:start' },
+        ],
+      ],
+    },
+  },
+
+  pair: {
+    text:
+      `\`\`\`\n` +
+      buildMenu('📱 WHATSAPP PAIR', [
+        'pair  <phone number>',
+        null,
+        'Links your WhatsApp to a session.',
+        'Include country code, no + sign.',
+        null,
+        'Example:',
+        '/pair 254713046497',
+      ]) +
+      `\n\`\`\``,
+    keyboard: {
+      inline_keyboard: [
+        [
+          { text: '👥 Group Tools', callback_data: 'menu:group' },
+          { text: '🎵 Music', callback_data: 'menu:music' },
+        ],
+        [
           { text: '🏠 Home', callback_data: 'menu:start' },
         ],
       ],
