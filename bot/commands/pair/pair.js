@@ -1,20 +1,7 @@
 const { safeReply } = require('../../lib/helpers');
+const { buildBox } = require('../../lib/box');
 const axios = require('axios');
 const WebSocket = require('ws');
-
-const LINE = '─'.repeat(32);
-const box = {
-  top: (title) => `┌──⌈ ${title} ⌋`,
-  row: (text) => `│ ${text}`,
-  sep: () => `│`,
-  bottom: () => `└${LINE}`,
-};
-function buildBox(title, rows) {
-  const lines = [box.top(title)];
-  for (const r of rows) lines.push(r === null ? box.sep() : box.row(r));
-  lines.push(box.bottom());
-  return `\`\`\`\n${lines.join('\n')}\n\`\`\``;
-}
 
 const BASE = 'https://pair.xwolf.space';
 const WS_URL = 'wss://pair.xwolf.space/ws';

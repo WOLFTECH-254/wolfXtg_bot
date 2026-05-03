@@ -7,6 +7,7 @@ const { loadCommands } = require('./lib/loader');
 const menus = require('./lib/menus');
 const store = require('./lib/store');
 const { getSenderName, isAdmin } = require('./lib/helpers');
+const { buildBox } = require('./lib/box');
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
@@ -76,40 +77,57 @@ bot.on('callback_query', async (query) => {
   }
 });
 
+const LINK_PATTERN = /(https?:\/\/|t\.me\/|telegram\.me\/|wa\.me\/|bit\.ly\/|tinyurl\.com|youtu\.be\/|youtube\.com\/|instagram\.com\/|twitter\.com\/|x\.com\/|facebook\.com\/|fb\.com\/|tiktok\.com\/|discord\.gg\/|discord\.com\/invite)/i;
+
+function extractText(msg) {
+  return [msg.text, msg.caption].filter(Boolean).join(' ');
+}
+
+function hasLink(msg) {
+  const allEntities = [...(msg.entities || []), ...(msg.caption_entities || [])];
+  if (allEntities.some(e => e.type === 'url' || e.type === 'text_link')) return true;
+  const text = extractText(msg);
+  if (text && LINK_PATTERN.test(text)) return true;
+  if (msg.forward_origin || msg.forward_from || msg.forward_from_chat) return true;
+  return false;
+}
+
 bot.on('message', async (msg) => {
-  if (!msg.text || !msg.chat || msg.from?.is_bot) return;
+  if (!msg.chat || msg.from?.is_bot) return;
 
   const chatId = msg.chat.id;
-  const text = msg.text.toLowerCase();
-
   const senderIsAdmin = await isAdmin(bot, chatId, msg.from.id).catch(() => false);
   if (senderIsAdmin) return;
 
   const antilink = store.getChat(chatId, 'antilink', false);
-  if (antilink) {
-    const linkPattern = /(https?:\/\/|t\.me\/|telegram\.me\/|bit\.ly\/)/i;
-    if (linkPattern.test(msg.text)) {
-      try {
-        await bot.deleteMessage(chatId, msg.message_id);
-        const warn = await bot.sendMessage(chatId,
-          `🔗 *Anti-Link:* Links are not allowed in this group, ${getSenderName(msg)}.`,
-          { parse_mode: 'Markdown' });
-        setTimeout(() => bot.deleteMessage(chatId, warn.message_id).catch(() => {}), 5000);
-      } catch {}
-      return;
-    }
+  if (antilink && hasLink(msg)) {
+    try {
+      await bot.deleteMessage(chatId, msg.message_id);
+      const warn = await bot.sendMessage(chatId,
+        buildBox('🔗 ANTI-LINK', [
+          `${getSenderName(msg)} — links not allowed.`,
+          null,
+          'Message deleted.',
+        ]),
+        { parse_mode: 'Markdown' });
+      setTimeout(() => bot.deleteMessage(chatId, warn.message_id).catch(() => {}), 6000);
+    } catch {}
+    return;
   }
 
+  const text = extractText(msg).toLowerCase();
   const badwords = store.getChat(chatId, 'badwords', []);
-  if (badwords.length > 0) {
+  if (text && badwords.length > 0) {
     const found = badwords.find(w => text.includes(w));
     if (found) {
       try {
         await bot.deleteMessage(chatId, msg.message_id);
         const warn = await bot.sendMessage(chatId,
-          `🚫 *Bad word detected*, ${getSenderName(msg)}. Message removed.`,
+          buildBox('🚫 BAD WORD', [
+            `${getSenderName(msg)} — message removed.`,
+          ]),
           { parse_mode: 'Markdown' });
-        setTimeout(() => bot.deleteMessage(chatId, warn.message_id).catch(() => {}), 5000);
+        setTimeout(() => bot.deleteMessage(chatId, warn.message_id).catch(() => {}), 6000);
       } catch {}
       return;
     }
