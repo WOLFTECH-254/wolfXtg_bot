@@ -233,8 +233,27 @@ async function main() {
     }
   });
 
-  bot.on('polling_error', (err) => logger.error(`Polling error: ${err.message}`));
-  bot.on('error',         (err) => logger.error(`Bot error: ${err.message}`));
+  // De-duplicate noisy polling errors (e.g. 409 Conflict spam)
+  let lastPollErr = '';
+  bot.on('polling_error', (err) => {
+    const msg = err.message || String(err);
+
+    if (msg.includes('409')) {
+      if (lastPollErr !== '409') {
+        logger.error('Another bot instance is using this token — pausing polling.');
+        botState.set({ status: 'CONFLICT' });
+        lastPollErr = '409';
+      }
+      return; // suppress repeats
+    }
+
+    if (msg !== lastPollErr) {
+      logger.error(`Polling error: ${msg}`);
+      lastPollErr = msg;
+    }
+  });
+
+  bot.on('error', (err) => logger.error(`Bot error: ${err.message}`));
 
   bot.getMe().then((me) => {
     botState.set({ username: me.username, status: 'ONLINE' });
