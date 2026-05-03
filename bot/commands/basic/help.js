@@ -9,18 +9,23 @@ module.exports = {
       `\`/help\` — This menu\n` +
       `\`/ping\` — Latency check\n` +
       `\`/info\` — Your profile info\n` +
-      `\`/echo <text>\` — Echo your text back\n` +
-      `\`/id\` — Get chat & user IDs\n\n` +
+      `\`/id\` — Get chat & user IDs\n` +
+      `\`/echo <text>\` — Echo your text back\n\n` +
       `*🔹 Group Tools* _(admin only)_\n` +
       `\`/rules\` — Show group rules\n` +
       `\`/warn @user\` — Warn a member\n` +
       `\`/kick @user\` — Remove a member\n` +
-      `\`/mute @user\` — Mute a member\n\n` +
-      `*🔹 Media & Music*\n` +
-      `\`/song <name>\` — Search a song\n` +
-      `\`/lyrics <name>\` — Get song lyrics\n` +
-      `\`/gif <query>\` — Search a GIF\n\n` +
-      `_Tip: Reply to a user with a command to target them._`;
+      `\`/mute @user\` — Mute a member\n` +
+      `\`/unmute @user\` — Unmute a member\n\n` +
+      `*🔹 Music & Media*\n` +
+      `\`/song <name>\` — Search YouTube Music\n` +
+      `\`/play <name>\` — Download & send MP3 audio\n` +
+      `\`/video <name>\` — Download & send MP4 video\n` +
+      `\`/dl <name>\` — Get both MP3 + MP4 links\n` +
+      `\`/lyrics <name>\` — Get full song lyrics\n` +
+      `\`/trending\` — Show trending music chart\n` +
+      `\`/gif <query>\` — Search & send a GIF\n\n` +
+      `_Tip: Reply to a user with an admin command to target them._`;
 
     await safeReply(bot, msg.chat.id, text);
   },
