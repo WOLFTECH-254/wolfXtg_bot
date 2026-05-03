@@ -127,6 +127,8 @@ const menus = {
         'goodbye       joinapproval',
         'onlyadmins    creategroup',
         'mode          leave',
+        'setgroupname  setgpp',
+        'setdesc',
         null,
         '⚠️  Admin-only commands',
       ]) +
