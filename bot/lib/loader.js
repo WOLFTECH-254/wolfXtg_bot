@@ -46,9 +46,6 @@ function loadCommands(bot, commandsDir) {
                 }
               }
 
-              const username = msg.from?.username || msg.from?.first_name || 'unknown';
-              const chatTitle = msg.chat?.title || 'Private';
-              logger.cmd(username, item.command, chatTitle);
               item.handler(bot, msg, match);
             });
 

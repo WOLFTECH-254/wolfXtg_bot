@@ -229,9 +229,7 @@ async function main() {
   bot.on('polling_error', (err) => logger.error(`Polling error: ${err.message}`));
   bot.on('error',         (err) => logger.error(`Bot error: ${err.message}`));
 
-  bot.getMe().then((me) => {
-    logger.banner(me.username, totalCommands, PLATFORM);
-  }).catch((err) => logger.error(`Failed to get bot info: ${err.message}`));
+  bot.getMe().catch((err) => logger.error(`Failed to get bot info: ${err.message}`));
 
   process.on('SIGINT',  () => { logger.warn('Shutting down...'); bot.stopPolling(); process.exit(0); });
   process.on('SIGTERM', () => { logger.warn('Shutting down...'); bot.stopPolling(); process.exit(0); });
