@@ -2,6 +2,20 @@ const { safeReply } = require('../../lib/helpers');
 const axios = require('axios');
 const WebSocket = require('ws');
 
+const LINE = '─'.repeat(32);
+const box = {
+  top: (title) => `┌──⌈ ${title} ⌋`,
+  row: (text) => `│ ${text}`,
+  sep: () => `│`,
+  bottom: () => `└${LINE}`,
+};
+function buildBox(title, rows) {
+  const lines = [box.top(title)];
+  for (const r of rows) lines.push(r === null ? box.sep() : box.row(r));
+  lines.push(box.bottom());
+  return `\`\`\`\n${lines.join('\n')}\n\`\`\``;
+}
+
 const BASE = 'https://pair.xwolf.space';
 const WS_URL = 'wss://pair.xwolf.space/ws';
 const TIMEOUT_MS = 60000;
@@ -85,7 +99,12 @@ async function runPair(bot, chatId, phone, existingMessageId = null) {
     }
   };
 
-  await edit(`⏳ Connecting to WhatsApp for \`${cleanPhone}\`...`);
+  await edit(buildBox('📱 WHATSAPP PAIR', [
+    `📞 Number:  ${cleanPhone}`,
+    null,
+    '⏳ Connecting...',
+    'Please wait a moment.',
+  ]));
 
   let sessionId;
   try {
@@ -93,31 +112,44 @@ async function runPair(bot, chatId, phone, existingMessageId = null) {
     sessionId = data.sessionId;
     if (!sessionId) throw new Error('No session ID returned from server.');
   } catch (err) {
-    return edit(`❌ Failed to create session: ${err.response?.data?.error || err.message}`);
+    return edit(buildBox('❌ PAIR FAILED', [
+      `📞 ${cleanPhone}`,
+      null,
+      err.response?.data?.error || err.message,
+    ]));
   }
 
-  await edit(
-    `✅ Session created!\n\n` +
-    `📡 Waiting for WhatsApp to deliver the pairing code...\n` +
-    `_(This can take up to 60s)_`
-  );
+  await edit(buildBox('📱 WHATSAPP PAIR', [
+    `📞 Number:  ${cleanPhone}`,
+    null,
+    '✅ Session ready!',
+    '📡 Waiting for WhatsApp...',
+    '   (up to 60 seconds)',
+  ]));
 
   let code;
   try {
     code = await waitForCode(sessionId);
   } catch (err) {
-    return edit(`❌ ${err.message}`);
+    return edit(buildBox('❌ PAIR FAILED', [
+      `📞 ${cleanPhone}`,
+      null,
+      err.message,
+    ]));
   }
 
   await edit(
-    `╔══════════════════════════╗\n` +
-    `║  📱  WHATSAPP PAIR CODE  ║\n` +
-    `╚══════════════════════════╝\n\n` +
-    `📞 Number: \`${cleanPhone}\`\n\n` +
-    `🔑 Code:\n` +
-    `\`${code}\`\n\n` +
-    `_Tap the code to copy, then open:_\n` +
-    `WhatsApp → Linked Devices → Link a Device → Link with phone number`,
+    buildBox('📱 WHATSAPP PAIR CODE', [
+      `📞 Number:  ${cleanPhone}`,
+      null,
+      `🔑 Code:    ${code}`,
+      null,
+      'Tap the code below to copy,',
+      'then open WhatsApp:',
+      '  Linked Devices → Link a Device',
+      '  → Link with phone number',
+    ]) +
+    `\n\`${code}\``,
     {
       reply_markup: {
         inline_keyboard: [
@@ -139,9 +171,15 @@ module.exports = {
 
     if (!phone) {
       return safeReply(bot, msg.chat.id,
-        `📱 *Usage:* \`/pair <phone number>\`\n\n` +
-        `Example: \`/pair 254713046497\`\n\n` +
-        `Include your country code without the \`+\` sign.`);
+        buildBox('📱 WHATSAPP PAIR', [
+          'Usage:  /pair <phone>',
+          null,
+          'Include country code, no + sign.',
+          null,
+          'Example:',
+          '/pair 254713046497',
+        ])
+      );
     }
 
     await runPair(bot, msg.chat.id, phone);
