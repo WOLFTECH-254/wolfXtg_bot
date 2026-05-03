@@ -238,6 +238,7 @@ async function main() {
 
   bot.getMe().then((me) => {
     botState.set({ username: me.username, status: 'ONLINE' });
+    console.log(`\x1b[1;32m✓ @${me.username} online\x1b[0m`);
   }).catch((err) => {
     botState.set({ status: 'ERROR' });
     logger.error(`Failed to get bot info: ${err.message}`);
