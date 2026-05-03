@@ -18,10 +18,8 @@ if (!TOKEN) {
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-logger.info('Starting bot...');
-
 const commandsDir = path.join(__dirname, 'commands');
-loadCommands(bot, commandsDir);
+const totalCommands = loadCommands(bot, commandsDir);
 
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
@@ -177,7 +175,7 @@ bot.on('polling_error', (err) => logger.error(`Polling error: ${err.message}`));
 bot.on('error', (err) => logger.error(`Bot error: ${err.message}`));
 
 bot.getMe().then((me) => {
-  logger.success(`Bot is running as @${me.username} (ID: ${me.id})`);
+  logger.banner(me.username, totalCommands);
 }).catch((err) => logger.error(`Failed to get bot info: ${err.message}`));
 
 process.on('SIGINT', () => { logger.warn('Shutting down...'); bot.stopPolling(); process.exit(0); });

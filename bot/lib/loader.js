@@ -6,9 +6,6 @@ const logger = require('./logger');
  * Auto-loads all command files from the commands/ directory and its
  * sub-folders. Each file must export a { command, handler } object or
  * an array of those objects.
- *
- * Example export:
- *   module.exports = { command: 'start', handler: (bot, msg) => { ... } };
  */
 function loadCommands(bot, commandsDir) {
   let total = 0;
@@ -31,10 +28,12 @@ function loadCommands(bot, commandsDir) {
             }
 
             bot.onText(new RegExp(`^\\/${item.command}(?:@\\w+)?(?:\\s|$)`, 'i'), (msg, match) => {
+              const username = msg.from?.username || msg.from?.first_name || 'unknown';
+              const chatTitle = msg.chat?.title || 'Private';
+              logger.cmd(username, item.command, chatTitle);
               item.handler(bot, msg, match);
             });
 
-            logger.success(`Loaded /${item.command} from ${path.relative(commandsDir, fullPath)}`);
             total++;
           }
         } catch (err) {
@@ -45,7 +44,7 @@ function loadCommands(bot, commandsDir) {
   }
 
   walk(commandsDir);
-  logger.info(`Total commands loaded: ${total}`);
+  return total;
 }
 
 module.exports = { loadCommands };
