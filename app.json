@@ -1,0 +1,25 @@
+{
+  "name": "wolfXtg Bot",
+  "description": "Telegram automation bot with group management, media downloads, and WhatsApp pairing.",
+  "keywords": ["telegram", "bot", "automation"],
+  "repository": "",
+  "logo": "",
+  "env": {
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Your Telegram bot token from @BotFather",
+      "required": true
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "stack": "heroku-22"
+}

@@ -1,0 +1,17 @@
+services:
+  - type: worker
+    name: wolfxtg-bot
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install -g pnpm && pnpm install --filter @workspace/telegram-bot
+    startCommand: node bot/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+    disk:
+      name: bot-data
+      mountPath: /opt/render/project/src/bot/data
+      sizeGB: 1

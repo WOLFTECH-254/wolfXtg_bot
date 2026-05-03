@@ -1,0 +1,33 @@
+# wolfXtg Telegram Bot — systemd service
+#
+# SETUP:
+#   1. Edit WorkingDirectory and User below to match your VPS
+#   2. Copy to: /etc/systemd/system/wolfxtg.service
+#   3. Run: sudo systemctl daemon-reload
+#          sudo systemctl enable wolfxtg
+#          sudo systemctl start wolfxtg
+#
+# COMMANDS:
+#   sudo systemctl status wolfxtg    ← check status
+#   sudo systemctl restart wolfxtg   ← restart
+#   sudo journalctl -u wolfxtg -f    ← live logs
+
+[Unit]
+Description=wolfXtg Telegram Bot
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/wolfxtg-bot
+EnvironmentFile=/home/ubuntu/wolfxtg-bot/.env
+ExecStart=/usr/bin/node bot/index.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wolfxtg-bot
+
+[Install]
+WantedBy=multi-user.target

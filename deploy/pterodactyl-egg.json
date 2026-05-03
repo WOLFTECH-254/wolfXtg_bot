@@ -1,0 +1,62 @@
+{
+  "_comment": "DO NOT EDIT: File auto-generated. Import this file in your Pterodactyl panel under Admin > Nests > Import Egg.",
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "name": "wolfXtg Telegram Bot",
+  "author": "wolfXtg",
+  "description": "Telegram automation bot with group management, media downloads, WhatsApp pairing, and more.",
+  "features": null,
+  "docker_images": {
+    "Node.js 20": "ghcr.io/pterodactyl/yolks:nodejs_20",
+    "Node.js 18": "ghcr.io/pterodactyl/yolks:nodejs_18"
+  },
+  "file_denylist": [],
+  "startup": "node {{STARTUP_FILE}}",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"BOT IS ONLINE\"}",
+    "logs": "{}",
+    "stop": "^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\napt-get update -y\napt-get install -y curl git\n\ncurl -fsSL https://get.pnpm.io/install.sh | bash -\nexport PNPM_HOME=\"/root/.local/share/pnpm\"\nexport PATH=\"$PNPM_HOME:$PATH\"\n\ncd /mnt/server\n\nif [ -d .git ]; then\n  echo \"Updating existing installation...\"\n  git pull\nelse\n  echo \"Cloning repository...\"\n  git clone ${GIT_REPO} .\nfi\n\npnpm install --filter @workspace/telegram-bot --prod\nmkdir -p bot/data\n\necho \"TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}\" > .env\necho \"Installation complete.\"",
+      "container": "ghcr.io/pterodactyl/installers:debian",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "Bot Token",
+      "description": "Your Telegram bot token from @BotFather",
+      "env_variable": "TELEGRAM_BOT_TOKEN",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "Startup File",
+      "description": "The main entry file for the bot",
+      "env_variable": "STARTUP_FILE",
+      "default_value": "bot/index.js",
+      "user_viewable": true,
+      "user_editable": false,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "Git Repository",
+      "description": "The GitHub repository URL to clone from",
+      "env_variable": "GIT_REPO",
+      "default_value": "https://github.com/yourusername/yourrepo.git",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    }
+  ]
+}

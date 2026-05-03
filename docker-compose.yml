@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  wolfxtg-bot:
+    build: .
+    container_name: wolfxtg_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - bot_data:/app/bot/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  bot_data:
+    driver: local
