@@ -26,11 +26,19 @@ const video = {
         { chat_id: msg.chat.id, message_id: status.message_id, parse_mode: 'Markdown' }
       );
 
-      await bot.sendVideo(msg.chat.id, data.downloadUrl, {
+      const axios = require('axios');
+      const fileRes = await axios.get(data.downloadUrl, {
+        responseType: 'arraybuffer',
+        timeout: 120000,
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+      const buffer = Buffer.from(fileRes.data);
+
+      await bot.sendVideo(msg.chat.id, buffer, {
         caption: `🎬 *${data.title}*\n📦 Quality: ${data.quality}\n🔗 [YouTube](${data.youtubeUrl})`,
         parse_mode: 'Markdown',
         supports_streaming: true,
-      });
+      }, { filename: `${data.title}.mp4`, contentType: 'video/mp4' });
 
       await bot.deleteMessage(msg.chat.id, status.message_id).catch(() => {});
     } catch (err) {

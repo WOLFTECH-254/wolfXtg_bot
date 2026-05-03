@@ -26,12 +26,19 @@ const play = {
         { chat_id: msg.chat.id, message_id: status.message_id, parse_mode: 'Markdown' }
       );
 
-      await bot.sendAudio(msg.chat.id, data.downloadUrl, {
+      const axios = require('axios');
+      const fileRes = await axios.get(data.downloadUrl, {
+        responseType: 'arraybuffer',
+        timeout: 60000,
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+      const buffer = Buffer.from(fileRes.data);
+
+      await bot.sendAudio(msg.chat.id, buffer, {
         title: data.title,
         caption: `🎵 *${data.title}*\n📦 Quality: ${data.quality}\n🔗 [YouTube](${data.youtubeUrl})`,
         parse_mode: 'Markdown',
-        thumbnail: data.thumbnail,
-      });
+      }, { filename: `${data.title}.mp3`, contentType: 'audio/mpeg' });
 
       await bot.deleteMessage(msg.chat.id, status.message_id).catch(() => {});
     } catch (err) {
