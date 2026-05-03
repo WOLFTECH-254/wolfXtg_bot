@@ -9,6 +9,8 @@ const menus     = require('./lib/menus');
 const store     = require('./lib/store');
 const { getSenderName, isAdmin } = require('./lib/helpers');
 const { buildBox } = require('./lib/box');
+const botState  = require('./lib/state');
+const { startWebServer } = require('./lib/webserver');
 
 const ENV_PATH = path.resolve(__dirname, '../.env');
 
@@ -72,11 +74,16 @@ async function main() {
     PLATFORM  = require('./lib/config').PLATFORM;
   }
 
+  // ── Start web server (status page) ────────────────────────
+  botState.set({ platform: PLATFORM });
+  startWebServer();
+
   // ── Start bot ─────────────────────────────────────────────
   const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
   const commandsDir = path.join(__dirname, 'commands');
   const totalCommands = loadCommands(bot, commandsDir);
+  botState.set({ cmdCount: totalCommands });
 
   bot.on('callback_query', async (query) => {
     const chatId    = query.message.chat.id;
@@ -229,10 +236,20 @@ async function main() {
   bot.on('polling_error', (err) => logger.error(`Polling error: ${err.message}`));
   bot.on('error',         (err) => logger.error(`Bot error: ${err.message}`));
 
-  bot.getMe().catch((err) => logger.error(`Failed to get bot info: ${err.message}`));
+  bot.getMe().then((me) => {
+    botState.set({ username: me.username, status: 'ONLINE' });
+  }).catch((err) => {
+    botState.set({ status: 'ERROR' });
+    logger.error(`Failed to get bot info: ${err.message}`);
+  });
 
-  process.on('SIGINT',  () => { logger.warn('Shutting down...'); bot.stopPolling(); process.exit(0); });
-  process.on('SIGTERM', () => { logger.warn('Shutting down...'); bot.stopPolling(); process.exit(0); });
+  const shutdown = () => {
+    botState.set({ status: 'OFFLINE' });
+    bot.stopPolling();
+    process.exit(0);
+  };
+  process.on('SIGINT',  shutdown);
+  process.on('SIGTERM', shutdown);
 }
 
 main().catch((err) => {
