@@ -336,11 +336,24 @@ function statusHTML() {
 }
 
 function startWebServer() {
-  // Replit maps localPort 8081 → externalPort 80 (preview pane).
-  // Other platforms inject PORT or let users set WEB_PORT.
+  // Port precedence (covers all hosts):
+  //   WEB_PORT   → user-defined override
+  //   SERVER_PORT→ Pterodactyl allocation
+  //   PORT       → Heroku / Render / Railway / Koyeb / etc.
+  //   8081       → Replit (mapped to externalPort 80)
+  //   3000       → local dev fallback
   const platform    = state.get().platform;
   const defaultPort = platform === 'replit' ? '8081' : '3000';
-  const port        = parseInt(process.env.WEB_PORT || process.env.PORT || defaultPort, 10);
+  const port        = parseInt(
+    process.env.WEB_PORT
+    || process.env.SERVER_PORT
+    || process.env.PORT
+    || defaultPort,
+    10
+  );
+
+  // Bind to 0.0.0.0 so Pterodactyl/Docker/etc. can route external traffic in.
+  const host = process.env.SERVER_IP || '0.0.0.0';
 
   const server = http.createServer((req, res) => {
     if (req.url === '/api/status') {
@@ -355,7 +368,14 @@ function startWebServer() {
     res.end(statusHTML());
   });
 
-  server.listen(port);
+  server.on('error', (err) => {
+    console.error(`\x1b[1;31m✗ Web UI failed to start on ${host}:${port} — ${err.message}\x1b[0m`);
+  });
+
+  server.listen(port, host, () => {
+    console.log(`\x1b[1;32m✓ Web UI on http://${host}:${port}\x1b[0m`);
+  });
+
   return server;
 }
 
