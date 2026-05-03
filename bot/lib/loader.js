@@ -4,7 +4,7 @@ const logger = require('./logger');
 const store = require('./store');
 const { isAdmin } = require('./helpers');
 
-const ADMIN_EXEMPT = new Set(['mode', 'start', 'help', 'menu', 'ping', 'info']);
+const ADMIN_EXEMPT = new Set(['mode', 'start', 'help', 'menu', 'ping', 'info', 'id', 'echo']);
 
 /**
  * Auto-loads all command files from the commands/ directory and its
