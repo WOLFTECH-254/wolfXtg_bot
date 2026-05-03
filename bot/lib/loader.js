@@ -46,6 +46,10 @@ function loadCommands(bot, commandsDir) {
                 }
               }
 
+              const who   = msg.from?.username || msg.from?.first_name || msg.from?.id;
+              const where = isGroup ? (msg.chat.title || 'Group') : null;
+              logger.cmd(who, item.command, where);
+
               item.handler(bot, msg, match);
             });
 

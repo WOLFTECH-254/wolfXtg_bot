@@ -67,13 +67,9 @@ const logger = {
   },
 
   cmd: (username, command, chatTitle) => {
-    const ts = time();
-    console.log(topLine());
-    console.log(midLine('CMD ', `/${command}`));
-    console.log(midLine('USER', `@${username}`));
-    console.log(midLine('CHAT', chatTitle || 'Private'));
-    console.log(midLine('TIME', ts));
-    console.log(botLine());
+    const where = chatTitle ? ` ${DG}in${R} ${G}${chatTitle}${R}` : '';
+    const user  = username ? ` ${DG}by${R} ${G}@${username}${R}` : '';
+    console.log(`${GB}→${R} ${GB}/${command}${R}${user}${where} ${GR}${time()}${R}`);
   },
 
   error: (msg) => {
