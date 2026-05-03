@@ -52,16 +52,16 @@ const PLATFORM_LABELS = {
 
 const logger = {
   banner: (username, cmdCount, platform) => {
-    const tag      = `@${username}`;
-    const sub      = `${cmdCount} commands loaded`;
+    const tag       = `@${username}`;
+    const sub       = `${cmdCount} commands`;
     const platLabel = PLATFORM_LABELS[platform] || '💻 Local';
     console.log('');
     console.log(topLine());
-    console.log(midLine('🐺', BRAND));
-    console.log(midLine('✅', 'BOT IS ONLINE'));
-    console.log(midLine('👤', tag));
-    console.log(midLine('📦', sub));
-    console.log(midLine('🖥️', platLabel));
+    console.log(midLine('BOT ', BRAND));
+    console.log(midLine('STAT', 'ONLINE'));
+    console.log(midLine('USER', tag));
+    console.log(midLine('CMDS', sub));
+    console.log(midLine('HOST', platLabel));
     console.log(botLine());
     console.log('');
   },
